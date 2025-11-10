@@ -73,7 +73,21 @@ def processing_image(image: np.ndarray[Any, Any]) -> np.ndarray[Any, Any]:
         np.array([100]), np.array([255])
     ))
 
-    return threshold
+    inverted_threshold = cv2.bitwise_not(threshold)
+
+    # upscaled_width = int(image.shape[1] * 2.5)
+    # upscaled_height = int(image.shape[0] * 2.5)
+    # upscaled = cv2.resize(inverted_threshold, (upscaled_width, upscaled_height), interpolation=cv2.INTER_LINEAR)
+
+    dilation_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+    dilated = cv2.dilate(inverted_threshold, dilation_kernel, iterations=1)
+
+    closed_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    closed = cv2.morphologyEx(dilated, cv2.MORPH_CLOSE, closed_kernel, iterations=1)
+
+    result = cv2.bitwise_not(closed)
+
+    return result
 
 
 def detect_and_overlay_polygons(
@@ -105,7 +119,7 @@ def detect_and_overlay_polygons(
     )
 
     image_area = original_image.shape[0] * original_image.shape[1]
-    min_area = 30
+    min_area = 70
     max_area = image_area * 0.001
 
     for contour in contours:
@@ -143,9 +157,9 @@ def main():
 
     for filename, image in images.items():
         binary_image = processing_image(image)
-        overlay_image = detect_and_overlay_polygons(image, binary_image)
+        # overlay_image = detect_and_overlay_polygons(image, binary_image)
         output_path = Path(output_directory) / filename
-        save_image(overlay_image, str(output_path))
+        save_image(binary_image, str(output_path))
 
 
 if __name__ == "__main__":
