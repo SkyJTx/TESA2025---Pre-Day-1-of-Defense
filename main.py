@@ -21,10 +21,13 @@ from defense.models.highlight_config import HighlightConfig
 
 # Global Configuration Variables (Merged & Simplified)
 # Image Processing Settings (Merged)
-PROCESSING_CONFIG = ImageProcessingConfig(threshold_min=60)
+PROCESSING_CONFIG = ImageProcessingConfig(
+    dilation_kernel_size=33,
+    threshold_min=60
+)
 
 # Highlight Settings (Merged - replaces ObjectDetectionConfig usage)
-HIGHLIGHT_CONFIG = HighlightConfig(min_area=0, dim_factor=0.4)
+HIGHLIGHT_CONFIG = HighlightConfig(min_area=0, max_area_ratio=0.01, dim_factor=0.4)
 
 # Overlay Settings (Bounding Box & Polygon)
 OVERLAY_CONFIG = OverlayConfig(color=(0, 255, 0), thickness=2)
@@ -161,7 +164,7 @@ def main():
     )
     args = arg_parser.parse_args()
     if args.mode == "batch_image":
-        create_batch_masked_image("pictures/p2", "outputs/p2")
+        create_batch_masked_image("pictures/p5", "outputs/p5")
     elif args.mode == "bbox_video":
         create_bounding_box_overlayed_video(
             "videos/data-2.mp4",
@@ -169,14 +172,24 @@ def main():
             "outputs/bbox_video_from_video.mp4"
         )
     elif args.mode == "masked_video":
-        create_masked_video(
-            "videos/P1_VIDEO_2.mp4",
-            "outputs/result_P1_VIDEO_2.mp4"
-        )
+        in_out_paths = [
+            ("videos/P1_VIDEO_1.mp4", "outputs/result_P1_VIDEO_1.mp4"),
+            ("videos/P1_VIDEO_2.mp4", "outputs/result_P1_VIDEO_2.mp4"),
+            ("videos/P1_VIDEO_3.mp4", "outputs/result_P1_VIDEO_3.mp4"),
+            ("videos/P1_VIDEO_4.mp4", "outputs/result_P1_VIDEO_4.mp4"),
+            ("videos/P1_VIDEO_5.mp4", "outputs/result_P1_VIDEO_5.mp4"),
+        ]
+        print("Creating masked videos...")
+        for in_path, out_path in in_out_paths:
+            create_masked_video(
+                in_path,
+                out_path
+            )
+            print(f"Created masked video: {out_path}")
     elif args.mode == "extract_images":
         create_image_from_extraction_from_video(
-            "videos/P1_VIDEO_2.mp4",
-            "outputs"
+            "videos/P1_VIDEO_5.mp4",
+            "pictures/p5"
         )
 
 
