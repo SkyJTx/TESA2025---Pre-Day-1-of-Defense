@@ -15,10 +15,10 @@ A powerful Python package for image processing, object detection, and video mani
 
 ```bash
 # Using uv (recommended)
-uv pip install -e .
+uv add git+https://github.com/SkyJTx/TESA2025---Pre-Day-1-of-Defense.git
 
 # Or using pip
-pip install -e .
+pip install git+https://github.com/SkyJTx/TESA2025---Pre-Day-1-of-Defense.git
 ```
 
 ## Quick Start
@@ -131,7 +131,6 @@ uv run main.py --mode batch_image --input-dir pictures/day2_test --output-dir ou
 | `batch_image` | Process all images in a directory and create output video |
 | `extract_images` | Extract frames from video at specified intervals |
 | `concat_images_to_video` | Create video from image sequence |
-| `custom` | Visualize all processing pipeline steps |
 
 ## Configuration
 
@@ -372,9 +371,9 @@ Morphological Close (fill holes)
     ↓
 Binary Result
     ↓
-Object Detection & Highlighting
-    ↓
 Third Dilation (post-processing)
+    ↓
+Object Detection & Highlighting
     ↓
 Final Result
 `
@@ -447,10 +446,6 @@ uv run -m defense_utils --mode custom
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[Your License Here]
 
 ## Author
 
