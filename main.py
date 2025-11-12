@@ -5,13 +5,13 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 
-from defense.image_loader import load_images_from_directory, save_image
-from defense.image_processor import combined_processing_and_highlighting
-from defense.models.combined_processing_config import CombinedProcessingConfig
-from defense.video_creator import create_video_from_images
-from defense.video_frame_manipulator import extract_image_from_video
-from defense.models.video_creation_config import VideoCreationConfig
-from defense.models.frame_extraction_config import FrameExtractionConfig
+from defense_utils.image_loader import load_images_from_directory, save_image
+from defense_utils.image_processor import combined_processing_and_highlighting
+from defense_utils.models.combined_processing_config import CombinedProcessingConfig
+from defense_utils.video_creator import create_video_from_images
+from defense_utils.video_frame_manipulator import extract_image_from_video
+from defense_utils.models.video_creation_config import VideoCreationConfig
+from defense_utils.models.frame_extraction_config import FrameExtractionConfig
 
 
 # Global Configuration Variables (Updated for new processing_image)

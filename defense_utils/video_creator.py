@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any
 import numpy as np
 
-from defense.models.video_creation_config import VideoCreationConfig
+from defense_utils.models.video_creation_config import VideoCreationConfig
 
 
 def create_video_from_images(

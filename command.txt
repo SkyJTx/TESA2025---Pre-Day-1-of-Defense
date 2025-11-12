@@ -1,5 +1,15 @@
 # Command Examples for delete-bg Project
 
+## USING AS INSTALLED PACKAGE (after installation)
+# After running: pip install . or uv pip install .
+defense-utils --mode batch_image --input-dir pictures/day2_test --output-dir outputs/day2_test
+defense-utils --mode extract_images --video-path videos/P1_VIDEO_5.mp4 --extract-output-dir pictures/p5
+
+## OR as module
+uv run -m defense_utils --mode batch_image --input-dir pictures/day2_test --output-dir outputs/day2_test
+
+## USING MAIN.PY DIRECTLY
+
 ## 1. Batch Process Images (with default config)
 uv run main.py --mode batch_image --input-dir pictures/day2_test --output-dir outputs/day2_test
 

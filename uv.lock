@@ -203,7 +203,7 @@ wheels = [
 [[package]]
 name = "delete-bg"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "matplotlib" },
     { name = "opencv-contrib-python" },

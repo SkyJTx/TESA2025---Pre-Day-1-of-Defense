@@ -2,7 +2,7 @@ import cv2
 from typing import Any
 import numpy as np
 
-from defense.models.frame_extraction_config import FrameExtractionConfig
+from defense_utils.models.frame_extraction_config import FrameExtractionConfig
 
 
 def extract_image_from_video(

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from typing import Any
 
-from defense.models.combined_processing_config import CombinedProcessingConfig
+from defense_utils.models.combined_processing_config import CombinedProcessingConfig
 
 
 def combined_processing_and_highlighting(

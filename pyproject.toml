@@ -1,13 +1,25 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "delete-bg"
 version = "0.1.0"
-description = "Add your description here"
+description = "Image processing and video manipulation utilities for object detection and background removal"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.10.7",
     "opencv-contrib-python>=4.12.0.88",
 ]
+
+[project.scripts]
+defense-utils = "defense_utils.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["defense_utils*"]
+exclude = ["tests*", "videos*", "outputs*", "pictures*"]
 
 [dependency-groups]
 dev = [
