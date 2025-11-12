@@ -48,8 +48,12 @@ FRAME_EXTRACTION_INTERVAL = 25
 FRAME_EXTRACTION_NAME_HEAD = "extracted_frame"
 
 
-def create_batch_masked_image(input_directory: str, output_directory: str):
+def create_batch_masked_image(input_directory: str, output_directory: str, config: CombinedProcessingConfig | None = None, video_config: VideoCreationConfig | None = None):
     """Process images in directory and create video using combined processing."""
+    if config is None:
+        config = COMBINED_CONFIG
+    if video_config is None:
+        video_config = VIDEO_CONFIG
     images = load_images_from_directory(input_directory)
     result_images: list[np.ndarray[Any, Any]] = []
 
@@ -58,7 +62,7 @@ def create_batch_masked_image(input_directory: str, output_directory: str):
 
     for filename, image in images.items():
         *_, result = combined_processing_and_highlighting(
-            image, COMBINED_CONFIG  # Get final highlighted image
+            image, config
         )
         
         output_path = output_path_obj / filename
@@ -68,17 +72,24 @@ def create_batch_masked_image(input_directory: str, output_directory: str):
     
     video_output_path = output_path_obj / "result_video.mp4"
     create_video_from_images(
-        result_images, str(video_output_path), VIDEO_CONFIG)
+        result_images, str(video_output_path), video_config)
 
 
 def create_image_from_extraction_from_video(
     video_path: str,
-    save_directory: str
+    save_directory: str,
+    frame_extraction_interval: int | None = None,
+    frame_extraction_name_head: str | None = None
 ):
     """Extract images from video at intervals."""
+    if frame_extraction_interval is None:
+        frame_extraction_interval = FRAME_EXTRACTION_INTERVAL
+    if frame_extraction_name_head is None:
+        frame_extraction_name_head = FRAME_EXTRACTION_NAME_HEAD
+
     frame_config = FrameExtractionConfig(
-        interval_of_extraction=FRAME_EXTRACTION_INTERVAL,
-        image_name_head=FRAME_EXTRACTION_NAME_HEAD
+        interval_of_extraction=frame_extraction_interval,
+        image_name_head=frame_extraction_name_head
     )
     result = extract_image_from_video(
         video_path,
@@ -94,13 +105,16 @@ def create_image_from_extraction_from_video(
 
 def make_video_from_images(
     input_directory: str,
-    output_video_path: str
+    output_video_path: str,
+    video_config: VideoCreationConfig | None = None
 ):
     """Create a video from images in a directory."""
+    if video_config is None:
+        video_config = VIDEO_CONFIG
     images = load_images_from_directory(input_directory)
 
     create_video_from_images(
-        images, output_video_path, VIDEO_CONFIG)
+        images, output_video_path, video_config)
 
 
 def custom_main():
@@ -196,26 +210,221 @@ def main():
     arg_parser.add_argument(
         "--mode",
         default=None,
-        choices=["batch_image", "extract_images", "concat_images_to_video"],
+        choices=["batch_image", "extract_images",
+                 "concat_images_to_video", "custom"],
         help="Mode of operation: 'batch_image' to process images in a directory, "
         "'extract_images' to extract images from video at intervals, "
-        "'concat_images_to_video' to create a video from images in a directory."
+        "'concat_images_to_video' to create a video from images in a directory, "
+        "'custom' to visualize processing steps."
     )
+
+    # Arguments for batch_image mode
+    arg_parser.add_argument(
+        "--input-dir",
+        help="Input directory for batch_image mode (e.g., pictures/day2_test)"
+    )
+    arg_parser.add_argument(
+        "--output-dir",
+        help="Output directory for batch_image mode (e.g., outputs/day2_test)"
+    )
+
+    # Arguments for extract_images mode
+    arg_parser.add_argument(
+        "--video-path",
+        help="Video file path for extract_images mode (e.g., videos/P1_VIDEO_5.mp4)"
+    )
+    arg_parser.add_argument(
+        "--extract-output-dir",
+        help="Output directory for extracted images (e.g., pictures/p5)"
+    )
+
+    # Arguments for concat_images_to_video mode
+    arg_parser.add_argument(
+        "--concat-input-dir",
+        help="Input directory for concat_images_to_video mode (e.g., pictures/day2_train)"
+    )
+    arg_parser.add_argument(
+        "--video-output-path",
+        help="Output video path for concat_images_to_video mode (e.g., outputs/day2_train_video.mp4)"
+    )
+
+    # Combined Processing Configuration arguments
+    arg_parser.add_argument(
+        "--threshold-min",
+        type=int,
+        help="Threshold minimum value"
+    )
+    arg_parser.add_argument(
+        "--threshold-max",
+        type=int,
+        help="Threshold maximum value"
+    )
+    arg_parser.add_argument(
+        "--first-dilation-kernel-size",
+        type=int,
+        help="First dilation kernel size"
+    )
+    arg_parser.add_argument(
+        "--first-dilation-iterations",
+        type=int,
+        help="First dilation iterations"
+    )
+    arg_parser.add_argument(
+        "--min-area-ratio",
+        type=float,
+        help="Minimum area ratio for contour filtering"
+    )
+    arg_parser.add_argument(
+        "--max-area-ratio",
+        type=float,
+        help="Maximum area ratio for contour filtering"
+    )
+    arg_parser.add_argument(
+        "--median-filter-kernel-size",
+        type=int,
+        help="Median filter kernel size"
+    )
+    arg_parser.add_argument(
+        "--dilation-kernel-size",
+        type=int,
+        help="Second dilation kernel size"
+    )
+    arg_parser.add_argument(
+        "--dilation-iterations",
+        type=int,
+        help="Second dilation iterations"
+    )
+    arg_parser.add_argument(
+        "--erosion-kernel-size",
+        type=int,
+        help="Erosion kernel size"
+    )
+    arg_parser.add_argument(
+        "--erosion-iterations",
+        type=int,
+        help="Erosion iterations"
+    )
+    arg_parser.add_argument(
+        "--close-kernel-size",
+        type=int,
+        help="Morphological close kernel size"
+    )
+    arg_parser.add_argument(
+        "--close-iterations",
+        type=int,
+        help="Morphological close iterations"
+    )
+    arg_parser.add_argument(
+        "--highlight-min-area",
+        type=int,
+        help="Highlight minimum area"
+    )
+    arg_parser.add_argument(
+        "--highlight-max-area-ratio",
+        type=float,
+        help="Highlight maximum area ratio"
+    )
+    arg_parser.add_argument(
+        "--third-dilation-kernel-size",
+        type=int,
+        help="Third dilation kernel size"
+    )
+    arg_parser.add_argument(
+        "--third-dilation-iterations",
+        type=int,
+        help="Third dilation iterations"
+    )
+    arg_parser.add_argument(
+        "--dim-factor",
+        type=float,
+        help="Dim factor for background (< 1.0 dims, > 1.0 brightens)"
+    )
+
+    # Video creation configuration arguments
+    arg_parser.add_argument(
+        "--fps",
+        type=int,
+        help="Frames per second for video creation"
+    )
+    arg_parser.add_argument(
+        "--codec",
+        help="Video codec (e.g., mp4v, XVID)"
+    )
+
+    # Frame extraction configuration arguments
+    arg_parser.add_argument(
+        "--frame-extraction-interval",
+        type=int,
+        help="Frame extraction interval"
+    )
+    arg_parser.add_argument(
+        "--frame-extraction-name-head",
+        help="Prefix for extracted frame names"
+    )
+
     args = arg_parser.parse_args()
+
+    # Build config from parsed arguments, using global defaults for unprovided arguments
+    config = CombinedProcessingConfig(
+        threshold_min=args.threshold_min if args.threshold_min is not None else COMBINED_CONFIG.threshold_min,
+        threshold_max=args.threshold_max if args.threshold_max is not None else COMBINED_CONFIG.threshold_max,
+        first_dilation_kernel_size=args.first_dilation_kernel_size if args.first_dilation_kernel_size is not None else COMBINED_CONFIG.first_dilation_kernel_size,
+        first_dilation_iterations=args.first_dilation_iterations if args.first_dilation_iterations is not None else COMBINED_CONFIG.first_dilation_iterations,
+        min_area_ratio=args.min_area_ratio if args.min_area_ratio is not None else COMBINED_CONFIG.min_area_ratio,
+        max_area_ratio=args.max_area_ratio if args.max_area_ratio is not None else COMBINED_CONFIG.max_area_ratio,
+        median_filter_kernel_size=args.median_filter_kernel_size if args.median_filter_kernel_size is not None else COMBINED_CONFIG.median_filter_kernel_size,
+        dilation_kernel_size=args.dilation_kernel_size if args.dilation_kernel_size is not None else COMBINED_CONFIG.dilation_kernel_size,
+        dilation_iterations=args.dilation_iterations if args.dilation_iterations is not None else COMBINED_CONFIG.dilation_iterations,
+        erosion_kernel_size=args.erosion_kernel_size if args.erosion_kernel_size is not None else COMBINED_CONFIG.erosion_kernel_size,
+        erosion_iterations=args.erosion_iterations if args.erosion_iterations is not None else COMBINED_CONFIG.erosion_iterations,
+        close_kernel_size=args.close_kernel_size if args.close_kernel_size is not None else COMBINED_CONFIG.close_kernel_size,
+        close_iterations=args.close_iterations if args.close_iterations is not None else COMBINED_CONFIG.close_iterations,
+        highlight_min_area=args.highlight_min_area if args.highlight_min_area is not None else COMBINED_CONFIG.highlight_min_area,
+        highlight_max_area_ratio=args.highlight_max_area_ratio if args.highlight_max_area_ratio is not None else COMBINED_CONFIG.highlight_max_area_ratio,
+        third_dilation_kernel_size=args.third_dilation_kernel_size if args.third_dilation_kernel_size is not None else COMBINED_CONFIG.third_dilation_kernel_size,
+        third_dilation_iterations=args.third_dilation_iterations if args.third_dilation_iterations is not None else COMBINED_CONFIG.third_dilation_iterations,
+        dim_factor=args.dim_factor if args.dim_factor is not None else COMBINED_CONFIG.dim_factor,
+    )
+
+    # Build video config
+    video_config = VideoCreationConfig(
+        fps=args.fps if args.fps is not None else VIDEO_CONFIG.fps,
+        codec=args.codec if args.codec is not None else VIDEO_CONFIG.codec
+    )
+
+    # Update frame extraction settings
+    frame_extraction_interval = args.frame_extraction_interval if args.frame_extraction_interval is not None else FRAME_EXTRACTION_INTERVAL
+    frame_extraction_name_head = args.frame_extraction_name_head if args.frame_extraction_name_head is not None else FRAME_EXTRACTION_NAME_HEAD
+
     if args.mode == "batch_image":
-        create_batch_masked_image("pictures/day2_test", "outputs/day2_test")
+        if not args.input_dir or not args.output_dir:
+            arg_parser.error(
+                "--input-dir and --output-dir are required for batch_image mode")
+        create_batch_masked_image(
+            args.input_dir, args.output_dir, config, video_config)
     elif args.mode == "extract_images":
+        if not args.video_path or not args.extract_output_dir:
+            arg_parser.error(
+                "--video-path and --extract-output-dir are required for extract_images mode")
         create_image_from_extraction_from_video(
-            "videos/P1_VIDEO_5.mp4",
-            "pictures/p5"
+            args.video_path,
+            args.extract_output_dir,
+            frame_extraction_interval,
+            frame_extraction_name_head
         )
     elif args.mode == "concat_images_to_video":
+        if not args.concat_input_dir or not args.video_output_path:
+            arg_parser.error(
+                "--concat-input-dir and --video-output-path are required for concat_images_to_video mode")
         make_video_from_images(
-            "pictures/day2_train",
-            "outputs/day2_train_video.mp4"
+            args.concat_input_dir,
+            args.video_output_path,
+            video_config
         )
-    else:
+    elif args.mode == "custom" or args.mode is None:
         custom_main()
+    else:
+        arg_parser.error(f"Unknown mode: {args.mode}")
 
 if __name__ == "__main__":
     main()
