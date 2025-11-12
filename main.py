@@ -25,17 +25,19 @@ COMBINED_CONFIG = CombinedProcessingConfig(
     first_dilation_kernel_size=9,
     first_dilation_iterations=1,
     min_area_ratio=0,
-    max_area_ratio=0.020,
+    max_area_ratio=0.1,
     median_filter_kernel_size=5,
-    dilation_kernel_size=35,
+    dilation_kernel_size=29,
     dilation_iterations=1,
-    erosion_kernel_size=9,
+    erosion_kernel_size=3,
     erosion_iterations=1,
     close_kernel_size=99,
     close_iterations=1,
     highlight_min_area=0,
     highlight_max_area_ratio=0.02,
-    dim_factor=0
+    third_dilation_kernel_size=9,
+    third_dilation_iterations=1,
+    dim_factor=0,
 )
 
 # Video Creation Settings
@@ -124,7 +126,8 @@ def custom_main():
         "9. Morphological Close",
         "10. Binary Result",
         "11. Object Mask (Highlight)",
-        "12. Final Highlighted Image"
+        "12. Final Highlighted Image",
+        "13. Third Dilation"
     ]
 
     # Display all processing steps
@@ -175,10 +178,15 @@ def custom_main():
     print(
         f"  - Highlight Max Area Ratio: {COMBINED_CONFIG.highlight_max_area_ratio}")
     print(f"  - Dim Factor: {COMBINED_CONFIG.dim_factor}")
+    print(f"\nPost-Highlight Processing:")
+    print(
+        f"  - Third Dilation Kernel: {COMBINED_CONFIG.third_dilation_kernel_size}x{COMBINED_CONFIG.third_dilation_kernel_size}")
+    print(
+        f"  - Third Dilation Iterations: {COMBINED_CONFIG.third_dilation_iterations}")
     print("="*60)
     print(f"\nTotal steps in pipeline: {len(all_steps)}")
     print(f"Use: *_, result = combined_processing_and_highlighting(image, config)")
-    print(f"     to get only the final highlighted image")
+    print(f"     to get only the final result (third dilation)")
     print("="*60)
 
 

@@ -123,6 +123,16 @@ def combined_processing_and_highlighting(
     result = result * (1 - background_mask_3ch * (1 - config.dim_factor))
     highlighted_result = np.clip(result, 0, 255).astype(np.uint8)
 
+    # Step 12: Third dilation (after highlighting)
+    third_dilation_kernel = cv2.getStructuringElement(
+        config.kernel_shape,
+        (config.third_dilation_kernel_size, config.third_dilation_kernel_size)
+    )
+    # Convert to grayscale for dilation operation
+    highlighted_gray = cv2.cvtColor(highlighted_result, cv2.COLOR_BGR2GRAY)
+    third_dilated = cv2.dilate(
+        highlighted_gray, third_dilation_kernel, iterations=config.third_dilation_iterations)
+
     return [
         gray,
         threshold,
@@ -135,5 +145,6 @@ def combined_processing_and_highlighting(
         closed,
         binary_result,
         object_mask,
-        highlighted_result
+        highlighted_result,
+        third_dilated
     ]

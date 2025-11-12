@@ -40,3 +40,7 @@ class CombinedProcessingConfig:
     highlight_min_area: int = 70
     highlight_max_area_ratio: float = 0.001
     dim_factor: float = 0.4  # < 1.0 dims background, > 1.0 brightens, = 1.0 unchanged
+
+    # Third dilation (after highlighting)
+    third_dilation_kernel_size: int = 9
+    third_dilation_iterations: int = 1
