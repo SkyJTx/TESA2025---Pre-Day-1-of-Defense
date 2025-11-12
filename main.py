@@ -126,8 +126,8 @@ def custom_main():
         "9. Morphological Close",
         "10. Binary Result",
         "11. Object Mask (Highlight)",
-        "12. Final Highlighted Image",
-        "13. Third Dilation"
+        "12. Third Dilation",
+        "13. Final Highlighted Image",
     ]
 
     # Display all processing steps

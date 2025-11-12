@@ -145,6 +145,6 @@ def combined_processing_and_highlighting(
         closed,
         binary_result,
         object_mask,
+        third_dilated,
         highlighted_result,
-        third_dilated
     ]
