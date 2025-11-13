@@ -23,14 +23,14 @@ GLOBAL_COMBINED_PROCESSING_CONFIG = CombinedProcessingConfig(
     min_area_ratio=0.00001,
     max_area_ratio=0.1,
     median_filter_kernel_size=1,
-    dilation_kernel_size=55,
+    dilation_kernel_size=45,
     dilation_iterations=1,
     erosion_kernel_size=9,
     erosion_iterations=1,
     close_kernel_size=5,
     close_iterations=1,
     highlight_min_area=0,
-    highlight_max_area_ratio=0.02,
+    highlight_max_area_ratio=0.005,
     third_dilation_kernel_size=9,
     third_dilation_iterations=1,
     dim_factor=0,
@@ -98,6 +98,30 @@ def concat_images_to_video(input_directory: str, output_video_path: str, video_c
     create_video_from_images(images, output_video_path, video_config)
     print(f"✓ Created video from {len(images)} images")
     print(f"✓ Output: {output_video_path}")
+
+
+def process_video(input_video_path: str, output_video_path: str,
+    config: CombinedProcessingConfig | None = None,
+    video_config: VideoCreationConfig | None = None
+    ):
+    """Process video frame by frame using combined processing."""
+    if config is None:
+        config = GLOBAL_COMBINED_PROCESSING_CONFIG
+    if video_config is None:
+        video_config = VideoCreationConfig(fps=25, codec='mp4v')
+
+    # Extract frames
+    frames = extract_image_from_video(input_video_path, FrameExtractionConfig(interval_of_extraction=1, image_name_head="frame"))
+
+    processed_frames: list[np.ndarray[Any, Any]] = []
+    for _, frame in frames:
+        *_, result = combined_processing_and_highlighting(frame, config)
+        processed_frames.append(result)
+
+    # Create video from processed frames
+    create_video_from_images(processed_frames, output_video_path, video_config)
+    print(f"✓ Processed video: {input_video_path}")
+    print(f"✓ Total frames processed: {len(processed_frames)}")
 
 
 """Simple entry point for defense_utils package - runs visualization demo."""
@@ -222,4 +246,8 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    batch_image("pictures/p3new", "outputs/p3new")
+    # batch_image("pictures/p3new", "outputs/p3new")
+    process_video(
+        "videos/P3_VIDEO.mp4",
+        "outputs/P3_VIDEO_Processed.mp4"
+    )
