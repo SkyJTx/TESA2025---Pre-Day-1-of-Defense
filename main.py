@@ -15,25 +15,48 @@ from defense_utils.models.video_creation_config import VideoCreationConfig
 from defense_utils.models.frame_extraction_config import FrameExtractionConfig
 
 
-GLOBAL_COMBINED_PROCESSING_CONFIG = CombinedProcessingConfig(
-    threshold_min=60,
+# Default configuration from the package
+General_Combined_Processing_Config = CombinedProcessingConfig(
+    threshold_min=25,
     threshold_max=255,
     first_dilation_kernel_size=9,
     first_dilation_iterations=1,
-    min_area_ratio=0.00001,
+    min_area_ratio=0,
     max_area_ratio=0.1,
-    median_filter_kernel_size=1,
-    dilation_kernel_size=55,
+    median_filter_kernel_size=5,
+    dilation_kernel_size=29,
     dilation_iterations=1,
-    erosion_kernel_size=9,
+    erosion_kernel_size=3,
     erosion_iterations=1,
-    close_kernel_size=5,
+    close_kernel_size=99,
     close_iterations=1,
     highlight_min_area=0,
     highlight_max_area_ratio=0.02,
     third_dilation_kernel_size=9,
     third_dilation_iterations=1,
     dim_factor=0,
+)
+
+# Merged configuration: command-line args override defaults
+GLOBAL_COMBINED_PROCESSING_CONFIG = CombinedProcessingConfig(
+    threshold_min=60,                    # Override: 60 (default: 25)
+    threshold_max=255,                   # Default: 255
+    first_dilation_kernel_size=1,        # Override: 1 (default: 9)
+    first_dilation_iterations=1,         # Default: 1
+    min_area_ratio=0,                    # Default: 0
+    max_area_ratio=1,                    # Override: 1 (default: 0.1)
+    median_filter_kernel_size=1,         # Override: 1 (default: 5)
+    dilation_kernel_size=55,             # Override: 55 (default: 29)
+    dilation_iterations=1,               # Default: 1
+    erosion_kernel_size=9,               # Override: 9 (default: 3)
+    erosion_iterations=1,                # Default: 1
+    close_kernel_size=5,                 # Override: 5 (default: 99)
+    close_iterations=1,                  # Default: 1
+    highlight_min_area=0,                # Default: 0
+    highlight_max_area_ratio=0.02,       # Default: 0.02
+    third_dilation_kernel_size=9,        # Default: 9
+    third_dilation_iterations=1,         # Default: 1
+    dim_factor=0,                        # Override: 0 (default: 0)
 )
 
 
@@ -44,7 +67,7 @@ def batch_image(input_directory: str, output_directory: str, config: CombinedPro
         config = GLOBAL_COMBINED_PROCESSING_CONFIG
     if video_config is None:
         video_config = VideoCreationConfig(fps=25, codec='mp4v')
-      
+
     images = load_images_from_directory(input_directory)
     result_images: list[np.ndarray[Any, Any]] = []
 
