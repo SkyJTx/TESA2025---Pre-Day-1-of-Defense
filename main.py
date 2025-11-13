@@ -17,18 +17,18 @@ from defense_utils.models.frame_extraction_config import FrameExtractionConfig
 
 # Default configuration from the package
 General_Combined_Processing_Config = CombinedProcessingConfig(
-    threshold_min=25,
+    threshold_min=60,
     threshold_max=255,
-    first_dilation_kernel_size=9,
+    first_dilation_kernel_size=1,
     first_dilation_iterations=1,
     min_area_ratio=0,
-    max_area_ratio=0.1,
-    median_filter_kernel_size=5,
-    dilation_kernel_size=29,
+    max_area_ratio=1,
+    median_filter_kernel_size=1,
+    dilation_kernel_size=55,
     dilation_iterations=1,
-    erosion_kernel_size=3,
+    erosion_kernel_size=9,
     erosion_iterations=1,
-    close_kernel_size=99,
+    close_kernel_size=5,
     close_iterations=1,
     highlight_min_area=0,
     highlight_max_area_ratio=0.02,
@@ -43,8 +43,8 @@ GLOBAL_COMBINED_PROCESSING_CONFIG = CombinedProcessingConfig(
     threshold_max=255,                   # Default: 255
     first_dilation_kernel_size=1,        # Override: 1 (default: 9)
     first_dilation_iterations=1,         # Default: 1
-    min_area_ratio=0,                    # Default: 0
-    max_area_ratio=1,                    # Override: 1 (default: 0.1)
+    min_area_ratio=0.00001,                    # Default: 0
+    max_area_ratio=0.1,                    # Override: 1 (default: 0.1)
     median_filter_kernel_size=1,         # Override: 1 (default: 5)
     dilation_kernel_size=55,             # Override: 55 (default: 29)
     dilation_iterations=1,               # Default: 1
