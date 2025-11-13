@@ -245,4 +245,4 @@ def main():
 
 if __name__ == "__main__":
     # main()
-    batch_image("pictures/p2", "outputs/p2")
+    batch_image("pictures/p3new", "outputs/p3new")
