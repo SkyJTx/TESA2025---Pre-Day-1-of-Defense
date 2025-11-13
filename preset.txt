@@ -1,1 +1,1 @@
-uv run defense_utils --mode batch_image --input-dir .\pictures\p2 --output-dir .\outputs\p2 --dim-factor 0 --first-dilation-kernel-size 1 --threshold-min 60 --max-area-ratio 1 --median-filter-kernel-size 1 --erosion-kernel-size 9 --close-kernel-size 5
+uv run defense_utils --mode batch_image --dim-factor 0 --first-dilation-kernel-size 1 --threshold-min 60 --max-area-ratio 1 --median-filter-kernel-size 1 --dilation-kernel-size 55  --erosion-kernel-size 9 --close-kernel-size 5 --input-dir .\pictures\p2 --output-dir .\outputs\p2
