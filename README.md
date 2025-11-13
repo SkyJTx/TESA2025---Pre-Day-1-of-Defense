@@ -8,8 +8,7 @@ A powerful Python package for image processing, object detection, and video mani
 - 🎯 **Object Detection & Highlighting**: Contour-based detection with configurable thresholds
 - 🎥 **Video Processing**: Extract frames and create videos from image sequences
 - ⚙️ **Highly Configurable**: 18+ tunable parameters for fine-grained control
-- 🚀 **Multiple Usage Methods**: CLI, Python module, or direct import
-- 📦 **Easy Installation**: Simple pip/uv installation
+- **Easy Installation**: Simple pip/uv installation
 
 ## Installation
 
@@ -23,78 +22,48 @@ pip install git+https://github.com/SkyJTx/TESA2025---Pre-Day-1-of-Defense.git
 
 ## Quick Start
 
-### CLI Usage
-
-```bash
-# Batch process images
-uv run -m defense_utils --mode batch_image \
-  --input-dir pictures/day2_test \
-  --output-dir outputs/day2_test
-
-# Extract frames from video
-uv run -m defense_utils --mode extract_images \
-  --video-path videos/video.mp4 \
-  --extract-output-dir frames/
-
-# Create video from images
-uv run -m defense_utils --mode concat_images_to_video \
-  --concat-input-dir frames/ \
-  --video-output-path output.mp4
-
-# Visualize processing pipeline
-uv run -m defense_utils --mode custom
-```
-
-### Python Import
+### Python Import Usage
 
 ```python
 from defense_utils import (
     combined_processing_and_highlighting,
     CombinedProcessingConfig,
+    load_images_from_directory,
+    save_image,
+    create_video_from_images,
+    VideoCreationConfig,
 )
 import cv2
 
-# Load and process image
-image = cv2.imread("image.jpg")
-config = CombinedProcessingConfig(
-    threshold_min=30,
-    dilation_kernel_size=35,
-    dim_factor=0.5
-)
-
-# Get processing steps (returns list of all intermediate images)
-steps = combined_processing_and_highlighting(image, config)
-
-# Get final result
-result = steps[-1]
+# Single image processing
+image = cv2.imread("test.jpg")
+config = CombinedProcessingConfig(threshold_min=30, dilation_kernel_size=35)
+*_, result = combined_processing_and_highlighting(image, config)
 cv2.imwrite("output.jpg", result)
+
+# Batch processing
+images = load_images_from_directory("input_dir/")
+results = []
+for filename, img in images.items():
+    *_, processed = combined_processing_and_highlighting(img, config)
+    save_image(processed, f"output_dir/{filename}")
+    results.append(processed)
+
+# Create video from processed images
+video_config = VideoCreationConfig(fps=25, codec='mp4v')
+create_video_from_images(results, "output_video.mp4", video_config)
 ```
 
-## Usage Methods
-
-### Method 1: Module Execution (Recommended)
-
-Run as a Python module with uv or python:
+### Visualize Pipeline
 
 ```bash
-# Using uv
-uv run -m defense_utils --mode batch_image --input-dir input/ --output-dir output/
-
-# Using python
-python -m defense_utils --mode batch_image --input-dir input/ --output-dir output/
+# Run visualization demo
+uv run python main.py
+# or
+python -m defense_utils
 ```
 
-### Method 2: Command-Line Tool
-
-If Python scripts directory is in your PATH:
-
-```bash
-defense-utils --mode batch_image --input-dir input/ --output-dir output/
-```
-
-### Method 3: Direct Python Import
-
-Import and use functions in your Python code:
+## Available Modes
 
 ```python
 from defense_utils import (
@@ -115,22 +84,6 @@ result = combined_processing_and_highlighting(image, config)[-1]
 from defense_utils import create_batch_masked_image
 create_batch_masked_image("input_dir/", "output_dir/", config)
 ```
-
-### Method 4: Using main.py
-
-The traditional script is still available:
-
-```bash
-uv run main.py --mode batch_image --input-dir pictures/day2_test --output-dir outputs/day2_test
-```
-
-## Available Modes
-
-| Mode | Description |
-|------|-------------|
-| `batch_image` | Process all images in a directory and create output video |
-| `extract_images` | Extract frames from video at specified intervals |
-| `concat_images_to_video` | Create video from image sequence |
 
 ## Configuration
 
@@ -196,79 +149,6 @@ frame_config = FrameExtractionConfig(
 )
 ```
 
-## Command Examples
-
-### Basic Operations
-
-```bash
-# Process images with default settings
-uv run -m defense_utils --mode batch_image \
-  --input-dir pictures/day2_test \
-  --output-dir outputs/day2_test
-
-# Extract every 15th frame from video
-uv run -m defense_utils --mode extract_images \
-  --video-path videos/drone.mp4 \
-  --extract-output-dir frames/ \
-  --frame-extraction-interval 15
-
-# Create 30fps video from images
-uv run -m defense_utils --mode concat_images_to_video \
-  --concat-input-dir frames/ \
-  --video-output-path output.mp4 \
-  --fps 30
-```
-
-### Custom Configuration
-
-```bash
-# Batch process with custom image processing parameters
-uv run -m defense_utils --mode batch_image \
-  --input-dir pictures/dataset \
-  --output-dir outputs/processed \
-  --threshold-min 30 \
-  --threshold-max 250 \
-  --dilation-kernel-size 35 \
-  --dim-factor 0.5 \
-  --fps 30 \
-  --codec XVID
-
-# Extract frames with custom naming
-uv run -m defense_utils --mode extract_images \
-  --video-path videos/sample.mp4 \
-  --extract-output-dir frames/ \
-  --frame-extraction-interval 10 \
-  --frame-extraction-name-head frame
-```
-
-### Full Parameter Example
-
-```bash
-uv run -m defense_utils --mode batch_image \
-  --input-dir pictures/input \
-  --output-dir outputs/result \
-  --threshold-min 25 \
-  --threshold-max 255 \
-  --first-dilation-kernel-size 9 \
-  --first-dilation-iterations 1 \
-  --min-area-ratio 0 \
-  --max-area-ratio 0.1 \
-  --median-filter-kernel-size 5 \
-  --dilation-kernel-size 29 \
-  --dilation-iterations 1 \
-  --erosion-kernel-size 3 \
-  --erosion-iterations 1 \
-  --close-kernel-size 99 \
-  --close-iterations 1 \
-  --highlight-min-area 0 \
-  --highlight-max-area-ratio 0.02 \
-  --third-dilation-kernel-size 9 \
-  --third-dilation-iterations 1 \
-  --dim-factor 0 \
-  --fps 25 \
-  --codec mp4v
-```
-
 ## API Reference
 
 ### Public Functions
@@ -320,30 +200,6 @@ extract_image_from_video(
 ) -> Generator[tuple[str, np.ndarray], None, None]
 ```
 
-#### Batch Operations
-
-```python
-create_batch_masked_image(
-    input_directory: str,
-    output_directory: str,
-    config: CombinedProcessingConfig | None = None,
-    video_config: VideoCreationConfig | None = None
-) -> None
-
-create_image_from_extraction_from_video(
-    video_path: str,
-    save_directory: str,
-    frame_extraction_interval: int | None = None,
-    frame_extraction_name_head: str | None = None
-) -> None
-
-make_video_from_images(
-    input_directory: str,
-    output_video_path: str,
-    video_config: VideoCreationConfig | None = None
-) -> None
-```
-
 ## Processing Pipeline
 
 The image processing pipeline consists of multiple stages:
@@ -393,35 +249,10 @@ project/
 │       ├── combined_processing_config.py
 │       ├── video_creation_config.py
 │       └── frame_extraction_config.py
-├── main.py                 # Alternative entry point
+├── main.py                 # Visualization demo
 ├── pyproject.toml         # Package configuration
-├── README.md              # This file
-├── QUICK_START.md         # Quick reference
-├── PACKAGE_USAGE.md       # Detailed usage guide
-└── command.txt            # Command examples
+└── README.md              # This file
 `
-
-## Help & Documentation
-
-### Get Help
-
-```bash
-# Show all available options
-uv run -m defense_utils --help
-
-# View quick start guide
-cat QUICK_START.md
-
-# View detailed usage guide
-cat PACKAGE_USAGE.md
-```
-
-### Additional Documentation
-
-- **QUICK_START.md** - Quick reference with common commands
-- **PACKAGE_USAGE.md** - Comprehensive usage guide with examples
-- **PACKAGE_SETUP.md** - Implementation details and setup information
-- **command.txt** - Additional command examples
 
 ## Requirements
 
@@ -436,11 +267,11 @@ cat PACKAGE_USAGE.md
 git clone https://github.com/SkyJTx/TESA2025---Pre-Day-1-of-Defense.git
 cd delete-bg
 
-# Install in editable mode
-uv pip install -e .
+# Install in editable mode (for development)
+pip install -e .
 
-# Run tests (visualize processing pipeline)
-uv run -m defense_utils --mode custom
+# Run visualization demo
+uv run python main.py
 ```
 
 ## Contributing
